@@ -1,0 +1,168 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Controle de Freelancers</title><style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#17253b;background:#f4f7fb}*{box-sizing:border-box}body{margin:0}header{background:#12253e;color:white;padding:22px max(20px,calc((100vw - 1200px)/2))}header h1{margin:0;font-size:23px}header p{margin:5px 0 0;color:#bed0e2;font-size:13px}main{max-width:1200px;margin:auto;padding:22px}nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;background:#e7edf5;color:#17253b}button.primary{background:#2563eb;color:white}button.danger{background:#fee2e2;color:#a91b1b}nav button.active{background:#172f50;color:white}.panel{background:white;border:1px solid #e3eaf2;border-radius:15px;padding:18px;margin-bottom:18px;box-shadow:0 3px 12px #142a4308}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h2{font-size:19px;margin:0 0 12px}small,.muted{color:#64748b}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{padding:17px;background:white;border-radius:13px;border:1px solid #e3eaf2}.stat b{display:block;font-size:27px;margin-top:5px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;min-width:780px}th,td{padding:10px;border-bottom:1px solid #edf1f5;text-align:left;font-size:13px}th{background:#f8fafc;color:#52647b}td.name{font-weight:650;min-width:150px}.day{min-width:105px;text-align:center}.checks{display:flex;justify-content:center;gap:5px}.check{padding:7px 9px;font-size:12px;background:#edf1f5;border:1px solid #dce4ee}.check.yes{background:#d5f7e4;border-color:#4cc887;color:#166534}.check.no{background:#fee2e2;border-color:#fca5a5;color:#991b1b}.check.partial{background:#fef3c7;border-color:#fbbf24;color:#92400e}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:12px;font-weight:650}.field input,.field select{padding:11px;border:1px solid #d7e1ec;border-radius:9px;width:100%}.full{grid-column:1/-1}.actions{display:flex;gap:7px;flex-wrap:wrap}.hidden{display:none!important}.pill{display:inline-block;border-radius:20px;padding:4px 9px;background:#dcfce7;color:#166534;font-size:12px}.pill.off{background:#e2e8f0;color:#475569}.empty{padding:30px;text-align:center;color:#64748b}.hint{background:#eff6ff;padding:12px;border-radius:9px;font-size:13px;color:#1d4d83;margin-top:12px}@media(max-width:650px){main{padding:12px}header{padding:20px}.stats{grid-template-columns:1fr 1fr}.form{grid-template-columns:1fr}.panel{padding:13px}.stat b{font-size:22px}}
+</style></head><body><div id="authScreen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f4f7fb"><div class="panel" style="width:100%;max-width:420px"><h2>Controle de Freelancers</h2><p class="muted">Acesso restrito aos responsáveis</p><form id="loginForm" style="display:grid;gap:14px"><label>E-mail<input id="loginEmail" type="email" required autocomplete="username" style="width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:8px"></label><label>Senha<input id="loginPassword" type="password" required autocomplete="current-password" style="width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:8px"></label><button id="loginButton" class="primary" type="submit">Entrar</button></form><p id="authMessage" class="muted" role="status"></p></div></div><div id="appShell" style="display:none"><header><h1>Controle de Freelancers</h1><p>Presenças, horários e cadastro em um só lugar</p><div style="margin-top:10px;font-size:12px;color:#bed0e2"><span id="signedEmail"></span> <button id="logoutButton" style="margin-left:10px;padding:5px 10px">Sair</button></div></header><main><nav><button class="active" data-tab="presencas">✓ Presenças</button><button data-tab="colaboradores">Colaboradores</button><button data-tab="horarios">Ajustes de horários</button><button data-tab="relatorios">Relatórios</button></nav><section id="presencas"><div class="stats"><div class="stat"><small>Colaboradores ativos</small><b id="activeCount">0</b></div><div class="stat"><small>Turnos presentes na semana</small><b id="presentCount">0</b></div><div class="stat"><small>Turnos sem registro</small><b id="pendingCount">0</b></div></div><div class="panel"><div class="top"><div><h2>Presença semanal</h2><small id="weekLabel"></small></div><div class="actions"><button id="prevWeek">← Anterior</button><button id="todayWeek">Esta semana</button><button id="nextWeek">Próxima →</button></div></div><p class="muted" style="font-size:13px">Clique em M (manhã) ou T (tarde) para alternar: sem registro → presente → falta → sem registro. Ajustes parciais são feitos na aba de horários.</p><div class="scroll" id="attendanceTable"></div></div></section><section id="colaboradores" class="hidden"><div class="panel"><h2 id="formTitle">Cadastrar colaborador</h2><form id="personForm" class="form"><input type="hidden" id="personId"><div class="field"><label>Nome completo *</label><input id="name" required></div><div class="field"><label>CPF *</label><input id="cpf" required maxlength="14" placeholder="000.000.000-00"></div><div class="field"><label>WhatsApp</label><input id="phone" placeholder="(44) 99999-9999"></div><div class="field"><label>Chave Pix</label><input id="pix"></div><div class="field full"><label>Endereço</label><input id="address"></div><div class="field"><label>Situação</label><select id="status"><option value="active">Ativo</option><option value="inactive">Inativo</option></select></div><div class="full actions"><button class="primary" type="submit">Salvar colaborador</button><button type="button" id="cancelEdit">Limpar</button></div></form></div><div class="panel"><div class="top"><h2>Colaboradores cadastrados</h2><select id="filterPeople"><option value="active">Ativos</option><option value="inactive">Inativos</option><option value="all">Todos</option></select></div><div class="scroll" id="peopleTable"></div></div></section><section id="horarios" class="hidden"><div class="panel"><h2>Registrar horário parcial</h2><p class="muted">Para atrasos, saídas antecipadas e turnos com horários específicos. O ajuste marca o turno como presente parcial.</p><form id="adjustForm" class="form"><div class="field"><label>Colaborador</label><select id="adjustPerson" required></select></div><div class="field"><label>Data</label><input type="date" id="adjustDate" required></div><div class="field"><label>Turno</label><select id="adjustShift"><option value="M">Manhã</option><option value="T">Tarde</option></select></div><div class="field"><label>Início</label><input type="time" id="adjustStart" required value="10:00"></div><div class="field"><label>Fim</label><input type="time" id="adjustEnd" required value="12:00"></div><div class="field full"><label>Observação</label><input id="adjustNote" placeholder="Ex.: chegou às 10h"></div><div class="full"><button class="primary" type="submit">Salvar ajuste</button></div></form></div><div class="panel"><h2>Ajustes registrados</h2><div class="scroll" id="adjustTable"></div></div></section><section id="relatorios" class="hidden"><div class="panel"><div class="top"><div><h2>Resumo da semana</h2><small id="reportWeek"></small></div><button class="primary" id="exportCsv">Exportar CSV</button></div><div class="scroll" id="reportTable"></div><div class="hint">Os relatórios contam turnos presentes, faltas explicitamente marcadas e ajustes parciais. Turnos sem marcação não são considerados faltas. Este protótipo não calcula pagamentos.</div></div></section><div class="hint">Dados armazenados no Supabase. Atualização automática a cada 10 segundos e ao retornar à página. Acesso somente com login autorizado.</div></main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script><script src="config.js"></script><script>
+
+
+let db={people:[],marks:{}};
+let client=null, currentUser=null, busy=false, refreshTimer=null;
+const cfg=window.APP_CONFIG||{};
+const $auth=id=>document.getElementById(id);
+function statusMessage(message,error=false){const el=$auth('authMessage');el.textContent=message;el.style.color=error?'#b91c1c':'#64748b';}
+async function loadData(){
+ if(!client||!currentUser)return;
+ const [people,marks]=await Promise.all([client.from('freelancer_people').select('*').order('name'),client.from('freelancer_marks').select('*')]);
+ if(people.error)throw people.error;if(marks.error)throw marks.error;
+ db.people=people.data.map(p=>({id:p.id,name:p.name,cpf:p.cpf,phone:p.phone,pix:p.pix,address:p.address,status:p.status}));
+ db.marks={};for(const m of marks.data)db.marks[`${m.person_id}|${m.work_date}|${m.shift}`]={state:m.state,start:m.start_time||'',end:m.end_time||'',note:m.note||''};
+ render();
+}
+async function runSave(task){
+ if(busy)return;busy=true;try{await task();await loadData();}catch(e){alert('Não foi possível salvar: '+(e.message||e));await loadData().catch(()=>{});}finally{busy=false;}
+}
+async function savePerson(p){
+ const {error}=await client.from('freelancer_people').upsert({id:p.id,owner_id:currentUser.id,name:p.name,cpf:p.cpf,phone:p.phone,pix:p.pix,address:p.address,status:p.status});if(error)throw error;
+}
+async function saveMark(id,date,shift,value){
+ if(!value){const {error}=await client.from('freelancer_marks').delete().eq('person_id',id).eq('work_date',date).eq('shift',shift);if(error)throw error;return;}
+ const {error}=await client.from('freelancer_marks').upsert({owner_id:currentUser.id,person_id:id,work_date:date,shift,state:value.state,start_time:value.start||null,end_time:value.end||null,note:value.note||''},{onConflict:'person_id,work_date,shift'});if(error)throw error;
+}
+async function enterApp(session){
+ currentUser=session?.user||null;
+ $auth('authScreen').style.display=currentUser?'none':'flex';
+ $auth('appShell').style.display=currentUser?'':'none';
+ if(currentUser){$auth('signedEmail').textContent=currentUser.email||'';try{await loadData();statusMessage('');}catch(e){alert('Erro ao carregar dados: '+e.message);}}
+}
+async function initialize(){
+ if(!cfg.supabaseUrl||!cfg.supabaseAnonKey||cfg.supabaseUrl.includes('COLE_AQUI')||cfg.supabaseAnonKey.includes('COLE_AQUI')){statusMessage('Configure o arquivo config.js antes de usar o sistema.',true);return;}
+ if(!window.supabase){statusMessage('Não foi possível carregar a biblioteca do Supabase. Verifique a conexão.',true);return;}
+ client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+ const {data,error}=await client.auth.getSession();if(error)statusMessage(error.message,true);
+ await enterApp(data?.session);
+ client.auth.onAuthStateChange((_event,session)=>{if((session?.user?.id||null)!==(currentUser?.id||null))setTimeout(()=>enterApp(session),0);});
+ document.getElementById('loginForm').onsubmit=async e=>{
+  e.preventDefault();const b=$auth('loginButton');b.disabled=true;statusMessage('Entrando...');
+  const {error}=await client.auth.signInWithPassword({email:$auth('loginEmail').value.trim(),password:$auth('loginPassword').value});
+  b.disabled=false;if(error)statusMessage('E-mail ou senha inválidos, ou conta não autorizada.',true);
+ };
+ $auth('logoutButton').onclick=async()=>{await client.auth.signOut();await enterApp(null);};
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentUser)loadData().catch(()=>{});});
+ refreshTimer=setInterval(()=>{if(currentUser&&!document.hidden&&!busy)loadData().catch(()=>{});},10000);
+}
+
+let offset=0;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function dateKey(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function days(){let d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7+offset*7);return Array.from({length:7},(_,i)=>{let x=new Date(d);x.setDate(d.getDate()+i);return x;});}
+function mk(id,date,shift){return `${id}|${date}|${shift}`;}
+function render(){
+ const active=db.people.filter(p=>p.status==='active'), dates=days(), keys=dates.map(dateKey);
+ $('weekLabel').textContent=dates[0].toLocaleDateString('pt-BR')+' a '+dates[6].toLocaleDateString('pt-BR');
+ $('reportWeek').textContent=$('weekLabel').textContent;
+ let present=0,pending=0;
+ for(const p of active) for(let i=0;i<7;i++) for(const shift of ['M','T']){
+   const state=db.marks[mk(p.id,keys[i],shift)]?.state;
+   if(state==='yes'||state==='partial')present++;
+   if(!state&&i<5)pending++;
+ }
+ $('activeCount').textContent=active.length;$('presentCount').textContent=present;$('pendingCount').textContent=pending;
+ let h='<table><thead><tr><th>Colaborador</th>';
+ for(const d of dates)h+=`<th class="day">${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]}<br>${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</th>`;
+ h+='</tr></thead><tbody>';
+ for(const p of active){
+  h+=`<tr><td class="name">${esc(p.name)}</td>`;
+  for(const d of keys){
+   h+='<td><div class="checks">';
+   for(const s of ['M','T']){
+    const state=db.marks[mk(p.id,d,s)]?.state||'';
+    const label=state==='yes'?'✓':state==='no'?'✕':state==='partial'?'◐':'·';
+    h+=`<button class="check ${state}" data-mark="${p.id}" data-date="${d}" data-shift="${s}">${s} ${label}</button>`;
+   }
+   h+='</div></td>';
+  }
+  h+='</tr>';
+ }
+ $('attendanceTable').innerHTML=active.length?h+'</tbody></table>':'<div class="empty">Cadastre um colaborador ativo para começar.</div>';
+ const filter=$('filterPeople').value,people=db.people.filter(p=>filter==='all'||p.status===filter);
+ let ph='<table><thead><tr><th>Nome</th><th>CPF</th><th>Situação</th><th>WhatsApp / Pix</th><th>Ações</th></tr></thead><tbody>';
+ for(const p of people){
+  let phone=(p.phone||'').replace(/\D/g,'');if(phone&&!phone.startsWith('55'))phone='55'+phone;
+  ph+=`<tr><td>${esc(p.name)}</td><td>${esc(p.cpf)}</td><td><span class="pill ${p.status==='inactive'?'off':''}">${p.status==='active'?'Ativo':'Inativo'}</span></td><td>${phone?`<a href="https://wa.me/${phone}" target="_blank" rel="noopener">Abrir WhatsApp</a>`:'—'}<br><small>Pix: ${esc(p.pix)||'—'}</small></td><td><div class="actions"><button data-edit="${p.id}">Editar</button><button data-toggle="${p.id}">${p.status==='active'?'Inativar':'Ativar'}</button><button class="danger" data-delete="${p.id}">Excluir</button></div></td></tr>`;
+ }
+ $('peopleTable').innerHTML=people.length?ph+'</tbody></table>':'<div class="empty">Nenhum colaborador neste filtro.</div>';
+ $('adjustPerson').innerHTML=active.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+ let ah='<table><thead><tr><th>Colaborador</th><th>Data</th><th>Turno</th><th>Horário</th><th>Observação</th><th>Ação</th></tr></thead><tbody>';
+ let adjustments=Object.entries(db.marks).filter(([k,v])=>v.state==='partial').sort((a,b)=>b[0].localeCompare(a[0]));
+ for(const [k,v] of adjustments){
+  const [id,d,s]=k.split('|'),p=db.people.find(x=>x.id===id);
+  ah+=`<tr><td>${esc(p?.name||'Excluído')}</td><td>${d.split('-').reverse().join('/')}</td><td>${s==='M'?'Manhã':'Tarde'}</td><td>${esc(v.start)}–${esc(v.end)}</td><td>${esc(v.note)}</td><td><button data-remove-adjust="${esc(k)}">Remover</button></td></tr>`;
+ }
+ $('adjustTable').innerHTML=adjustments.length?ah+'</tbody></table>':'<div class="empty">Nenhum ajuste registrado.</div>';
+ let rh='<table><thead><tr><th>Colaborador</th><th>Turnos completos</th><th>Parciais</th><th>Faltas marcadas</th></tr></thead><tbody>';
+ for(const p of db.people){
+  let yes=0,no=0,partial=0;
+  for(const d of keys)for(const s of ['M','T']){
+   const v=db.marks[mk(p.id,d,s)]?.state;
+   if(v==='yes')yes++;if(v==='no')no++;if(v==='partial')partial++;
+  }
+  rh+=`<tr><td>${esc(p.name)}</td><td>${yes}</td><td>${partial}</td><td>${no}</td></tr>`;
+ }
+ $('reportTable').innerHTML=db.people.length?rh+'</tbody></table>':'<div class="empty">Sem dados.</div>';
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));
+ document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.tab));
+ render();
+}));
+$('prevWeek').onclick=()=>{offset--;render();};
+$('nextWeek').onclick=()=>{offset++;render();};
+$('todayWeek').onclick=()=>{offset=0;render();};
+$('filterPeople').onchange=render;
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.mark){
+  const k=mk(b.dataset.mark,b.dataset.date,b.dataset.shift),old=db.marks[k]?.state||'';
+  const next=old===''?'yes':old==='yes'?'no':'';
+  runSave(()=>saveMark(b.dataset.mark,b.dataset.date,b.dataset.shift,next?{state:next}:null));
+ }
+ if(b.dataset.edit){
+  const p=db.people.find(x=>x.id===b.dataset.edit);if(!p)return;
+  for(const f of ['name','cpf','phone','pix','address'])$(f).value=p[f]||'';
+  $('personId').value=p.id;$('status').value=p.status;$('formTitle').textContent='Editar colaborador';
+  $('personForm').scrollIntoView({behavior:'smooth'});
+ }
+ if(b.dataset.toggle){const p=db.people.find(x=>x.id===b.dataset.toggle);if(p){runSave(()=>savePerson({...p,status:p.status==='active'?'inactive':'active'}));}}
+ if(b.dataset.delete&&confirm('Excluir definitivamente este colaborador e seu histórico? Prefira inativar.')){
+  runSave(async()=>{const {error}=await client.from('freelancer_people').delete().eq('id',b.dataset.delete);if(error)throw error;});
+ }
+ if(b.dataset.removeAdjust&&confirm('Remover este ajuste?')){const [id,d,s]=b.dataset.removeAdjust.split('|');runSave(()=>saveMark(id,d,s,null));}
+});
+$('personForm').onsubmit=e=>{
+ e.preventDefault();const id=$('personId').value||(crypto.randomUUID?.()||String(Date.now()));
+ const cpf=$('cpf').value.replace(/\D/g,'');
+ if(cpf.length!==11){alert('Informe CPF com 11 dígitos.');return;}
+ if(db.people.some(p=>p.cpf.replace(/\D/g,'')===cpf&&p.id!==id)){alert('CPF já cadastrado.');return;}
+ const p={id,name:$('name').value.trim(),cpf:$('cpf').value.trim(),phone:$('phone').value.trim(),pix:$('pix').value.trim(),address:$('address').value.trim(),status:$('status').value};
+ runSave(async()=>{await savePerson(p);$('personForm').reset();$('personId').value='';$('formTitle').textContent='Cadastrar colaborador';});
+};
+$('cancelEdit').onclick=()=>{$('personForm').reset();$('personId').value='';$('formTitle').textContent='Cadastrar colaborador';};
+$('adjustDate').value=dateKey(new Date());
+$('adjustForm').onsubmit=e=>{
+ e.preventDefault();const start=$('adjustStart').value,end=$('adjustEnd').value;
+ if(start>=end){alert('O horário final deve ser posterior ao inicial.');return;}
+ runSave(async()=>{await saveMark($('adjustPerson').value,$('adjustDate').value,$('adjustShift').value,{state:'partial',start,end,note:$('adjustNote').value});$('adjustNote').value='';});
+};
+$('exportCsv').onclick=()=>{
+ const dates=days().map(dateKey),rows=[['Colaborador','CPF','Data','Turno','Situação','Início','Fim','Observação']];
+ for(const p of db.people)for(const d of dates)for(const s of ['M','T']){
+  const v=db.marks[mk(p.id,d,s)]||{};
+  rows.push([p.name,p.cpf,d,s,v.state||'sem registro',v.start||'',v.end||'',v.note||'']);
+ }
+ const csv='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
+ a.href=url;a.download=`presencas_${dates[0]}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+render();
+initialize();
+</script></body></html>
