@@ -1,17 +1,18 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Controle de Freelancers</title><style>
 :root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#17253b;background:#f4f7fb}*{box-sizing:border-box}body{margin:0}header{background:#12253e;color:white;padding:22px max(20px,calc((100vw - 1200px)/2))}header h1{margin:0;font-size:23px}header p{margin:5px 0 0;color:#bed0e2;font-size:13px}main{max-width:1200px;margin:auto;padding:22px}nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;background:#e7edf5;color:#17253b}button.primary{background:#2563eb;color:white}button.danger{background:#fee2e2;color:#a91b1b}nav button.active{background:#172f50;color:white}.panel{background:white;border:1px solid #e3eaf2;border-radius:15px;padding:18px;margin-bottom:18px;box-shadow:0 3px 12px #142a4308}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h2{font-size:19px;margin:0 0 12px}small,.muted{color:#64748b}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{padding:17px;background:white;border-radius:13px;border:1px solid #e3eaf2}.stat b{display:block;font-size:27px;margin-top:5px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;min-width:780px}th,td{padding:10px;border-bottom:1px solid #edf1f5;text-align:left;font-size:13px}th{background:#f8fafc;color:#52647b}td.name{font-weight:650;min-width:150px}.day{min-width:105px;text-align:center}.checks{display:flex;justify-content:center;gap:5px}.check{padding:7px 9px;font-size:12px;background:#edf1f5;border:1px solid #dce4ee}.check.yes{background:#d5f7e4;border-color:#4cc887;color:#166534}.check.no{background:#fee2e2;border-color:#fca5a5;color:#991b1b}.check.partial{background:#fef3c7;border-color:#fbbf24;color:#92400e}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:12px;font-weight:650}.field input,.field select{padding:11px;border:1px solid #d7e1ec;border-radius:9px;width:100%}.full{grid-column:1/-1}.actions{display:flex;gap:7px;flex-wrap:wrap}.hidden{display:none!important}.pill{display:inline-block;border-radius:20px;padding:4px 9px;background:#dcfce7;color:#166534;font-size:12px}.pill.off{background:#e2e8f0;color:#475569}.empty{padding:30px;text-align:center;color:#64748b}.hint{background:#eff6ff;padding:12px;border-radius:9px;font-size:13px;color:#1d4d83;margin-top:12px}@media(max-width:650px){main{padding:12px}header{padding:20px}.stats{grid-template-columns:1fr 1fr}.form{grid-template-columns:1fr}.panel{padding:13px}.stat b{font-size:22px}}
-</style></head><body><div id="authScreen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f4f7fb"><div class="panel" style="width:100%;max-width:420px"><h2>Controle de Freelancers</h2><p class="muted">Acesso restrito aos responsáveis</p><form id="loginForm" style="display:grid;gap:14px"><label>E-mail<input id="loginEmail" type="email" required autocomplete="username" style="width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:8px"></label><label>Senha<input id="loginPassword" type="password" required autocomplete="current-password" style="width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:8px"></label><button id="loginButton" class="primary" type="submit">Entrar</button></form><p id="authMessage" class="muted" role="status"></p></div></div><div id="appShell" style="display:none"><header><h1>Controle de Freelancers</h1><p>Presenças, horários e cadastro em um só lugar</p><div style="margin-top:10px;font-size:12px;color:#bed0e2"><span id="signedEmail"></span> <button id="logoutButton" style="margin-left:10px;padding:5px 10px">Sair</button></div></header><main><nav><button class="active" data-tab="presencas">✓ Presenças</button><button data-tab="colaboradores">Colaboradores</button><button data-tab="horarios">Ajustes de horários</button><button data-tab="relatorios">Relatórios</button></nav><section id="presencas"><div class="stats"><div class="stat"><small>Colaboradores ativos</small><b id="activeCount">0</b></div><div class="stat"><small>Turnos presentes na semana</small><b id="presentCount">0</b></div><div class="stat"><small>Turnos sem registro</small><b id="pendingCount">0</b></div></div><div class="panel"><div class="top"><div><h2>Presença semanal</h2><small id="weekLabel"></small></div><div class="actions"><button id="prevWeek">← Anterior</button><button id="todayWeek">Esta semana</button><button id="nextWeek">Próxima →</button></div></div><p class="muted" style="font-size:13px">Clique em M (manhã) ou T (tarde) para alternar: sem registro → presente → falta → sem registro. Ajustes parciais são feitos na aba de horários.</p><div class="scroll" id="attendanceTable"></div></div></section><section id="colaboradores" class="hidden"><div class="panel"><h2 id="formTitle">Cadastrar colaborador</h2><form id="personForm" class="form"><input type="hidden" id="personId"><div class="field"><label>Nome completo *</label><input id="name" required></div><div class="field"><label>CPF *</label><input id="cpf" required maxlength="14" placeholder="000.000.000-00"></div><div class="field"><label>WhatsApp</label><input id="phone" placeholder="(44) 99999-9999"></div><div class="field"><label>Chave Pix</label><input id="pix"></div><div class="field full"><label>Endereço</label><input id="address"></div><div class="field"><label>Situação</label><select id="status"><option value="active">Ativo</option><option value="inactive">Inativo</option></select></div><div class="full actions"><button class="primary" type="submit">Salvar colaborador</button><button type="button" id="cancelEdit">Limpar</button></div></form></div><div class="panel"><div class="top"><h2>Colaboradores cadastrados</h2><select id="filterPeople"><option value="active">Ativos</option><option value="inactive">Inativos</option><option value="all">Todos</option></select></div><div class="scroll" id="peopleTable"></div></div></section><section id="horarios" class="hidden"><div class="panel"><h2>Registrar horário parcial</h2><p class="muted">Para atrasos, saídas antecipadas e turnos com horários específicos. O ajuste marca o turno como presente parcial.</p><form id="adjustForm" class="form"><div class="field"><label>Colaborador</label><select id="adjustPerson" required></select></div><div class="field"><label>Data</label><input type="date" id="adjustDate" required></div><div class="field"><label>Turno</label><select id="adjustShift"><option value="M">Manhã</option><option value="T">Tarde</option></select></div><div class="field"><label>Início</label><input type="time" id="adjustStart" required value="10:00"></div><div class="field"><label>Fim</label><input type="time" id="adjustEnd" required value="12:00"></div><div class="field full"><label>Observação</label><input id="adjustNote" placeholder="Ex.: chegou às 10h"></div><div class="full"><button class="primary" type="submit">Salvar ajuste</button></div></form></div><div class="panel"><h2>Ajustes registrados</h2><div class="scroll" id="adjustTable"></div></div></section><section id="relatorios" class="hidden"><div class="panel"><div class="top"><div><h2>Resumo da semana</h2><small id="reportWeek"></small></div><button class="primary" id="exportCsv">Exportar CSV</button></div><div class="scroll" id="reportTable"></div><div class="hint">Os relatórios contam turnos presentes, faltas explicitamente marcadas e ajustes parciais. Turnos sem marcação não são considerados faltas. Este protótipo não calcula pagamentos.</div></div></section><div class="hint">Dados armazenados no Supabase. Atualização automática a cada 10 segundos e ao retornar à página. Acesso somente com login autorizado.</div></main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script><script src="config.js"></script><script>
+.stat b{font-variant-numeric:tabular-nums}.stat:last-child b{font-size:21px}@media(max-width:650px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}}
+</style></head><body><div id="authScreen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f4f7fb"><div class="panel" style="width:100%;max-width:420px"><h2>Controle de Freelancers</h2><p class="muted">Acesso restrito aos responsáveis</p><form id="loginForm" style="display:grid;gap:14px"><label>E-mail<input id="loginEmail" type="email" required autocomplete="username" style="width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:8px"></label><label>Senha<input id="loginPassword" type="password" required autocomplete="current-password" style="width:100%;margin-top:6px;padding:12px;border:1px solid #cbd5e1;border-radius:8px"></label><button id="loginButton" class="primary" type="submit">Entrar</button></form><p id="authMessage" class="muted" role="status"></p></div></div><div id="appShell" style="display:none"><header><h1>Controle de Freelancers</h1><p>Presenças, horários e cadastro em um só lugar</p><div style="margin-top:10px;font-size:12px;color:#bed0e2"><span id="signedEmail"></span> <button id="logoutButton" style="margin-left:10px;padding:5px 10px">Sair</button></div></header><main><nav><button class="active" data-tab="presencas">✓ Presenças</button><button data-tab="colaboradores">Colaboradores</button><button data-tab="horarios">Ajustes de horários</button><button data-tab="relatorios">Relatórios</button><button data-tab="pagamentos">💰 Pagamentos</button></nav><section id="presencas"><div class="stats"><div class="stat"><small>Colaboradores ativos</small><b id="activeCount">0</b></div><div class="stat"><small>Turnos presentes na semana</small><b id="presentCount">0</b></div><div class="stat"><small>Turnos sem registro</small><b id="pendingCount">0</b></div></div><div class="panel"><div class="top"><div><h2>Presença semanal</h2><small id="weekLabel"></small></div><div class="actions"><button id="prevWeek">← Anterior</button><button id="todayWeek">Esta semana</button><button id="nextWeek">Próxima →</button></div></div><p class="muted" style="font-size:13px">Clique em M (manhã), T (tarde) ou N (noite) para alternar: sem registro → presente → falta → sem registro. Ajustes parciais são feitos na aba de horários.</p><div class="scroll" id="attendanceTable"></div></div></section><section id="colaboradores" class="hidden"><div class="panel"><h2 id="formTitle">Cadastrar colaborador</h2><form id="personForm" class="form"><input type="hidden" id="personId"><div class="field"><label>Nome completo *</label><input id="name" required></div><div class="field"><label>CPF *</label><input id="cpf" required maxlength="14" placeholder="000.000.000-00"></div><div class="field"><label>WhatsApp</label><input id="phone" placeholder="(44) 99999-9999"></div><div class="field"><label>Chave Pix</label><input id="pix"></div><div class="field full"><label>Endereço</label><input id="address"></div><div class="field"><label>Situação</label><select id="status"><option value="active">Ativo</option><option value="inactive">Inativo</option></select></div><div class="full actions"><button class="primary" type="submit">Salvar colaborador</button><button type="button" id="cancelEdit">Limpar</button></div></form></div><div class="panel"><div class="top"><h2>Colaboradores cadastrados</h2><select id="filterPeople"><option value="active">Ativos</option><option value="inactive">Inativos</option><option value="all">Todos</option></select></div><div class="scroll" id="peopleTable"></div></div></section><section id="horarios" class="hidden"><div class="panel"><h2>Registrar horário parcial</h2><p class="muted">Para atrasos, saídas antecipadas e turnos com horários específicos. O ajuste marca o turno como presente parcial.</p><form id="adjustForm" class="form"><div class="field"><label>Colaborador</label><select id="adjustPerson" required></select></div><div class="field"><label>Data</label><input type="date" id="adjustDate" required></div><div class="field"><label>Turno</label><select id="adjustShift"><option value="M">Manhã</option><option value="T">Tarde</option><option value="N">Noite</option></select></div><div class="field"><label>Início</label><input type="time" id="adjustStart" required value="10:00"></div><div class="field"><label>Fim</label><input type="time" id="adjustEnd" required value="12:00"></div><div class="field full"><label>Observação</label><input id="adjustNote" placeholder="Ex.: chegou às 10h"></div><div class="full"><button class="primary" type="submit">Salvar ajuste</button></div></form></div><div class="panel"><h2>Ajustes registrados</h2><p class="muted">Veja as horas não trabalhadas e o valor devido por turno. Um ajuste parcial aparece como ◐ na aba Presenças.</p><div class="scroll" id="adjustTable"></div></div></section><section id="pagamentos" class="hidden"><div class="stats"><div class="stat"><small>Trabalhado na semana</small><b id="payTotal">R$ 0,00</b></div><div class="stat"><small>Já adiantado</small><b id="payAdvanced">R$ 0,00</b></div><div class="stat"><small>Saldo para sexta-feira</small><b id="payBalance">R$ 0,00</b></div></div><div class="panel"><div class="top"><div><h2>Fechamento semanal</h2><small id="payWeek"></small></div><button id="exportPay" class="primary">Exportar pagamentos CSV</button></div><p class="muted">Acumulado das presenças registradas, inclusive sábado e domingo quando houver. Não projeta turnos futuros nem considera turnos sem marcação. A semana exibida acompanha as setas da aba Presenças.</p><div class="scroll" id="paymentTable"></div></div><div class="panel"><h2>Registrar pagamento antecipado</h2><p class="muted">Registre pagamentos feitos antes do fechamento de sexta. O valor é descontado da semana da data do pagamento. Não realiza Pix.</p><form id="advanceForm" class="form"><div class="field"><label>Colaborador</label><select id="advancePerson" required></select></div><div class="field"><label>Data do pagamento</label><input id="advanceDate" type="date" required></div><div class="field"><label>Valor pago (R$)</label><input id="advanceAmount" type="number" min="0.01" step="0.01" required placeholder="100,00"></div><div class="field"><label>Observação</label><input id="advanceNote" placeholder="Ex.: primeiro dia, Pix"></div><div class="full"><button class="primary" type="submit">Registrar pagamento</button></div></form><h3>Pagamentos antecipados da semana</h3><div class="scroll" id="advanceTable"></div><div class="hint">Dia (manhã + tarde): R$ 100,00. Manhã 08:00–12:00: R$ 50,00. Tarde 13:30–18:00: R$ 50,00. Noite 18:00–00:00: R$ 100,00 adicionais. Turnos parciais proporcionais aos minutos efetivamente trabalhados, com arredondamento por turno. Pagamentos antecipados registrados são abatidos do saldo, mas não executam transferências Pix.</div></div></section><section id="relatorios" class="hidden"><div class="panel"><div class="top"><div><h2>Resumo da semana</h2><small id="reportWeek"></small></div><button class="primary" id="exportCsv">Exportar CSV</button></div><div class="scroll" id="reportTable"></div><div class="hint">Os relatórios contam turnos presentes, faltas explicitamente marcadas e ajustes parciais. Turnos sem marcação não são considerados faltas. Os valores estão na aba Pagamentos.</div></div></section><div class="hint">Dados armazenados no Supabase. Atualização automática a cada 10 segundos e ao retornar à página. Acesso somente com login autorizado.</div></main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script><script src="config.js"></script><script>
 
 
-let db={people:[],marks:{}};
+let db={people:[],marks:{},advances:[]};
 let client=null, currentUser=null, busy=false, refreshTimer=null;
 const cfg=window.APP_CONFIG||{};
 const $auth=id=>document.getElementById(id);
 function statusMessage(message,error=false){const el=$auth('authMessage');el.textContent=message;el.style.color=error?'#b91c1c':'#64748b';}
 async function loadData(){
  if(!client||!currentUser)return;
- const [people,marks]=await Promise.all([client.from('freelancer_people').select('*').order('name'),client.from('freelancer_marks').select('*')]);
- if(people.error)throw people.error;if(marks.error)throw marks.error;
+ const [people,marks,advances]=await Promise.all([client.from('freelancer_people').select('*').order('name'),client.from('freelancer_marks').select('*'),client.from('freelancer_advances').select('*').order('paid_on',{ascending:false})]);
+ if(people.error)throw people.error;if(marks.error)throw marks.error;if(advances.error)throw advances.error;db.advances=advances.data;
  db.people=people.data.map(p=>({id:p.id,name:p.name,cpf:p.cpf,phone:p.phone,pix:p.pix,address:p.address,status:p.status}));
  db.marks={};for(const m of marks.data)db.marks[`${m.person_id}|${m.work_date}|${m.shift}`]={state:m.state,start:m.start_time||'',end:m.end_time||'',note:m.note||''};
  render();
@@ -56,12 +57,37 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function dateKey(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function days(){let d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7+offset*7);return Array.from({length:7},(_,i)=>{let x=new Date(d);x.setDate(d.getDate()+i);return x;});}
 function mk(id,date,shift){return `${id}|${date}|${shift}`;}
+const schedule={M:{start:480,end:720,label:'Manhã',cents:5000},T:{start:810,end:1080,label:'Tarde',cents:5000},N:{start:1080,end:1440,label:'Noite',cents:10000}};
+const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v);
+const toMinutes=t=>{if(t==='00:00'||t==='00:00:00')return 1440;const [h,m]=String(t||'').split(':').map(Number);return Number.isFinite(h)&&Number.isFinite(m)?h*60+m:NaN;};
+const fmtMinutes=m=>`${Math.floor(m/60)}h${String(m%60).padStart(2,'0')}min`;
+function shiftCalc(v,shift){
+ const plan=schedule[shift],total=plan.end-plan.start;
+ if(!v||v.state==='no')return {worked:0,missed:total,cents:0};
+ if(v.state==='yes')return {worked:total,missed:0,cents:plan.cents};
+ if(v.state!=='partial')return {worked:0,missed:total,cents:0};
+ const start=toMinutes(v.start),end=toMinutes(v.end);
+ const worked=Math.max(0,Math.min(plan.end,end)-Math.max(plan.start,start));
+ return {worked,missed:total-worked,cents:Math.round(plan.cents*worked/total)};
+}
+function paymentRows(){
+ const keys=days().map(dateKey),today=dateKey(new Date()),rows=[];
+ for(const p of db.people){let cents=0,turns=0,partials=0;
+  for(const d of keys)for(const shift of ['M','T','N']){
+   const v=db.marks[mk(p.id,d,shift)];if(!v||v.state==='no'||d>today)continue;
+   const calc=shiftCalc(v,shift);cents+=calc.cents;if(calc.cents)turns++;if(v.state==='partial')partials++;
+  }
+  const advances=db.advances.filter(a=>a.person_id===p.id&&keys.includes(a.paid_on)).reduce((sum,a)=>sum+a.amount_cents,0);
+  if(cents>0||turns>0||advances>0)rows.push({p,cents,turns,partials,advances,balance:cents-advances});
+ }
+ return rows.sort((a,b)=>b.cents-a.cents||a.p.name.localeCompare(b.p.name));
+}
 function render(){
  const active=db.people.filter(p=>p.status==='active'), dates=days(), keys=dates.map(dateKey);
  $('weekLabel').textContent=dates[0].toLocaleDateString('pt-BR')+' a '+dates[6].toLocaleDateString('pt-BR');
- $('reportWeek').textContent=$('weekLabel').textContent;
+ $('reportWeek').textContent=$('weekLabel').textContent; $('payWeek').textContent=$('weekLabel').textContent;
  let present=0,pending=0;
- for(const p of active) for(let i=0;i<7;i++) for(const shift of ['M','T']){
+ for(const p of active) for(let i=0;i<7;i++) for(const shift of ['M','T','N']){
    const state=db.marks[mk(p.id,keys[i],shift)]?.state;
    if(state==='yes'||state==='partial')present++;
    if(!state&&i<5)pending++;
@@ -74,7 +100,7 @@ function render(){
   h+=`<tr><td class="name">${esc(p.name)}</td>`;
   for(const d of keys){
    h+='<td><div class="checks">';
-   for(const s of ['M','T']){
+   for(const s of ['M','T','N']){
     const state=db.marks[mk(p.id,d,s)]?.state||'';
     const label=state==='yes'?'✓':state==='no'?'✕':state==='partial'?'◐':'·';
     h+=`<button class="check ${state}" data-mark="${p.id}" data-date="${d}" data-shift="${s}">${s} ${label}</button>`;
@@ -92,23 +118,34 @@ function render(){
  }
  $('peopleTable').innerHTML=people.length?ph+'</tbody></table>':'<div class="empty">Nenhum colaborador neste filtro.</div>';
  $('adjustPerson').innerHTML=active.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
- let ah='<table><thead><tr><th>Colaborador</th><th>Data</th><th>Turno</th><th>Horário</th><th>Observação</th><th>Ação</th></tr></thead><tbody>';
+ let ah='<table><thead><tr><th>Colaborador</th><th>Data</th><th>Turno</th><th>Horário</th><th>Não trabalhado</th><th>Valor do turno</th><th>Observação</th><th>Ação</th></tr></thead><tbody>';
  let adjustments=Object.entries(db.marks).filter(([k,v])=>v.state==='partial').sort((a,b)=>b[0].localeCompare(a[0]));
  for(const [k,v] of adjustments){
   const [id,d,s]=k.split('|'),p=db.people.find(x=>x.id===id);
-  ah+=`<tr><td>${esc(p?.name||'Excluído')}</td><td>${d.split('-').reverse().join('/')}</td><td>${s==='M'?'Manhã':'Tarde'}</td><td>${esc(v.start)}–${esc(v.end)}</td><td>${esc(v.note)}</td><td><button data-remove-adjust="${esc(k)}">Remover</button></td></tr>`;
+  const calc=shiftCalc(v,s);ah+=`<tr><td>${esc(p?.name||'Excluído')}</td><td>${d.split('-').reverse().join('/')}</td><td>${schedule[s]?.label||s}</td><td>${esc(v.start)}–${esc(v.end)}</td><td>${fmtMinutes(calc.missed)}</td><td>${money(calc.cents/100)}</td><td>${esc(v.note)}</td><td><button data-remove-adjust="${esc(k)}">Remover</button></td></tr>`;
  }
  $('adjustTable').innerHTML=adjustments.length?ah+'</tbody></table>':'<div class="empty">Nenhum ajuste registrado.</div>';
  let rh='<table><thead><tr><th>Colaborador</th><th>Turnos completos</th><th>Parciais</th><th>Faltas marcadas</th></tr></thead><tbody>';
  for(const p of db.people){
   let yes=0,no=0,partial=0;
-  for(const d of keys)for(const s of ['M','T']){
+  for(const d of keys)for(const s of ['M','T','N']){
    const v=db.marks[mk(p.id,d,s)]?.state;
    if(v==='yes')yes++;if(v==='no')no++;if(v==='partial')partial++;
   }
   rh+=`<tr><td>${esc(p.name)}</td><td>${yes}</td><td>${partial}</td><td>${no}</td></tr>`;
  }
  $('reportTable').innerHTML=db.people.length?rh+'</tbody></table>':'<div class="empty">Sem dados.</div>';
+ const rows=paymentRows(),total=rows.reduce((n,r)=>n+r.cents,0),advanced=rows.reduce((n,r)=>n+r.advances,0),balance=total-advanced;
+ $('payTotal').textContent=money(total/100);$('payAdvanced').textContent=money(advanced/100);$('payBalance').textContent=money(balance/100);
+ let pay='<table><thead><tr><th>Colaborador</th><th>Turnos</th><th>Parciais</th><th>Chave Pix</th><th>Trabalhado</th><th>Já pago</th><th>Saldo</th></tr></thead><tbody>';
+ for(const r of rows)pay+=`<tr><td><strong>${esc(r.p.name)}</strong></td><td>${r.turns}</td><td>${r.partials}</td><td>${esc(r.p.pix||'—')}</td><td>${money(r.cents/100)}</td><td>${money(r.advances/100)}</td><td><strong>${money(r.balance/100)}</strong></td></tr>`;
+ pay+=`<tr><td colspan="4"><strong>TOTAL</strong></td><td><strong>${money(total/100)}</strong></td><td>${money(advanced/100)}</td><td><strong>${money(balance/100)}</strong></td></tr>`;
+ $('paymentTable').innerHTML=rows.length?pay+'</tbody></table>':'<div class="empty">Nenhuma presença ou pagamento registrado nesta semana.</div>';
+ $('advancePerson').innerHTML=db.people.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.status==='active'?'ativo':'inativo'})</option>`).join('');
+ const advancesWeek=db.advances.filter(a=>keys.includes(a.paid_on));
+ let adv='<table><thead><tr><th>Data</th><th>Colaborador</th><th>Valor</th><th>Observação</th><th>Ação</th></tr></thead><tbody>';
+ for(const a of advancesWeek){const p=db.people.find(p=>p.id===a.person_id);adv+=`<tr><td>${a.paid_on.split('-').reverse().join('/')}</td><td>${esc(p?.name||'Colaborador excluído')}</td><td>${money(a.amount_cents/100)}</td><td>${esc(a.note)}</td><td><button data-delete-advance="${a.id}">Excluir lançamento</button></td></tr>`;}
+ $('advanceTable').innerHTML=advancesWeek.length?adv+'</tbody></table>':'<div class="empty">Nenhum pagamento antecipado nesta semana.</div>';
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));
@@ -136,6 +173,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.delete&&confirm('Excluir definitivamente este colaborador e seu histórico? Prefira inativar.')){
   runSave(async()=>{const {error}=await client.from('freelancer_people').delete().eq('id',b.dataset.delete);if(error)throw error;});
  }
+ if(b.dataset.deleteAdvance&&confirm('Excluir este lançamento de pagamento antecipado?')){runSave(async()=>{const {error}=await client.from('freelancer_advances').delete().eq('id',b.dataset.deleteAdvance);if(error)throw error;});}
  if(b.dataset.removeAdjust&&confirm('Remover este ajuste?')){const [id,d,s]=b.dataset.removeAdjust.split('|');runSave(()=>saveMark(id,d,s,null));}
 });
 $('personForm').onsubmit=e=>{
@@ -147,15 +185,22 @@ $('personForm').onsubmit=e=>{
  runSave(async()=>{await savePerson(p);$('personForm').reset();$('personId').value='';$('formTitle').textContent='Cadastrar colaborador';});
 };
 $('cancelEdit').onclick=()=>{$('personForm').reset();$('personId').value='';$('formTitle').textContent='Cadastrar colaborador';};
-$('adjustDate').value=dateKey(new Date());
+$('adjustDate').value=dateKey(new Date());$('advanceDate').value=dateKey(new Date());
+$('advanceForm').onsubmit=e=>{e.preventDefault();const amount=Math.round(Number($('advanceAmount').value)*100);if(!Number.isSafeInteger(amount)||amount<=0){alert('Informe um valor válido.');return;}runSave(async()=>{const {error}=await client.from('freelancer_advances').insert({owner_id:currentUser.id,person_id:$('advancePerson').value,paid_on:$('advanceDate').value,amount_cents:amount,note:$('advanceNote').value.trim()});if(error)throw error;$('advanceAmount').value='';$('advanceNote').value='';});};
+$('exportPay').onclick=()=>{
+ const rows=paymentRows(),data=[['Colaborador','CPF','Pix','Turnos','Ajustes parciais','Trabalhado R$','Adiantado R$','Saldo R$'],...rows.map(r=>[r.p.name,r.p.cpf,r.p.pix,r.turns,r.partials,(r.cents/100).toFixed(2).replace('.',','),(r.advances/100).toFixed(2).replace('.',','),(r.balance/100).toFixed(2).replace('.',',')])];
+ const csv='\ufeff'+data.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=`pagamentos_${dateKey(days()[0])}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
 $('adjustForm').onsubmit=e=>{
  e.preventDefault();const start=$('adjustStart').value,end=$('adjustEnd').value;
- if(start>=end){alert('O horário final deve ser posterior ao inicial.');return;}
+ if(toMinutes(start)>=toMinutes(end)){alert('O horário final deve ser posterior ao inicial. Para meia-noite, use 00:00.');return;}
+ const shift=$('adjustShift').value,plan=schedule[shift];if(toMinutes(start)<plan.start||toMinutes(end)>plan.end){alert('Horário fora do turno padrão: '+(shift==='M'?'08:00–12:00':shift==='T'?'13:30–18:00':'18:00–00:00')+'.');return;}
  runSave(async()=>{await saveMark($('adjustPerson').value,$('adjustDate').value,$('adjustShift').value,{state:'partial',start,end,note:$('adjustNote').value});$('adjustNote').value='';});
 };
 $('exportCsv').onclick=()=>{
  const dates=days().map(dateKey),rows=[['Colaborador','CPF','Data','Turno','Situação','Início','Fim','Observação']];
- for(const p of db.people)for(const d of dates)for(const s of ['M','T']){
+ for(const p of db.people)for(const d of dates)for(const s of ['M','T','N']){
   const v=db.marks[mk(p.id,d,s)]||{};
   rows.push([p.name,p.cpf,d,s,v.state||'sem registro',v.start||'',v.end||'',v.note||'']);
  }

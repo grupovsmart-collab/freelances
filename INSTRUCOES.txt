@@ -1,0 +1,11 @@
+VERSÃO 3 — NOITE E ADIANTAMENTOS
+
+1. Faça backup do banco Supabase antes da migração.
+2. No Supabase > SQL Editor, execute MIGRACAO_V3_EXECUTAR_NO_SUPABASE.sql.
+3. Confirme sucesso e faça teste com colaborador fictício.
+4. No GitHub, substitua SOMENTE index.html e config.js pelos arquivos deste ZIP. Não execute supabase.sql antigo novamente.
+5. Aguarde deploy da Vercel e recarregue.
+
+REGRAS: Manhã R$50 (08-12); tarde R$50 (13:30-18); noite R$100 (18-00). Períodos parciais por minuto. Pagamentos antecipados são atribuídos à semana da data de pagamento (segunda a domingo), deduzidos do saldo. Saldo negativo significa pagamento maior que o trabalhado na semana; não há transferência bancária automática.
+
+OBS: Ao existir adiantamento, a exclusão definitiva do colaborador será bloqueada pelo banco. Inative-o.
